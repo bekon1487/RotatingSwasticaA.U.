@@ -1,0 +1,96 @@
+import turtle
+import math
+
+screen = turtle.Screen()
+screen.title("Вращающийся сюрикен")
+screen.bgcolor("red")
+screen.setup(700, 700)
+screen.tracer(0)
+
+t = turtle.Turtle()
+t.hideturtle()
+t.speed(0)
+
+SIDE = 200  # расстояние от центра до края плеча
+THICK = 50  # толщина полос (было 30)
+CIRCLE_R = 300  # радиус белого круга (было 260)
+
+
+def draw_circle():
+    t.penup()
+    t.goto(0, -CIRCLE_R)
+    t.setheading(0)
+    t.color("white", "white")
+    t.begin_fill()
+    t.pendown()
+    t.circle(CIRCLE_R)
+    t.end_fill()
+    t.penup()
+
+
+def draw_rect(cx, cy, angle, length, thick):
+    t.penup()
+    t.goto(cx, cy)
+    t.setheading(angle + 90)
+    t.forward(thick / 2)
+    t.setheading(angle)
+    t.forward(length / 2)
+    t.setheading(angle + 180)
+
+    t.color("black", "black")
+    t.begin_fill()
+    t.pendown()
+    t.forward(length)
+    t.left(90)
+    t.forward(thick)
+    t.left(90)
+    t.forward(length)
+    t.left(90)
+    t.forward(thick)
+    t.end_fill()
+    t.penup()
+
+
+def draw_arm(angle):
+    a = math.radians(angle)
+    a_cw = math.radians(angle - 90)
+    a_back = math.radians(angle + 180)
+
+    # Длинная полоса
+    long_cx = (SIDE / 2) * math.cos(a)
+    long_cy = (SIDE / 2) * math.sin(a)
+    draw_rect(long_cx, long_cy, angle, SIDE, THICK)
+
+    # Дальний конец
+    end_x = SIDE * math.cos(a)
+    end_y = SIDE * math.sin(a)
+
+    # Шапка Г
+    short_len = SIDE - THICK
+    cx = end_x + (short_len / 2) * math.cos(a_cw) + (THICK / 2) * math.cos(a_back)
+    cy = end_y + (short_len / 2) * math.sin(a_cw) + (THICK / 2) * math.sin(a_back)
+    draw_rect(cx, cy, angle - 90, short_len, THICK)
+
+
+def draw_shuriken(angle):
+    t.clear()
+    draw_circle()
+    draw_arm(angle)
+    draw_arm(angle + 90)
+    draw_arm(angle + 180)
+    draw_arm(angle + 270)
+    screen.update()
+
+
+angle = 0
+
+
+def animate():
+    global angle
+    angle -= 3
+    draw_shuriken(angle)
+    screen.ontimer(animate, 20)
+
+
+animate()
+screen.mainloop()
